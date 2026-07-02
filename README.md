@@ -1,154 +1,150 @@
-# yjh
+# SAM2-Based Image Object Segmentation and Evaluation Framework
 
-基于 **SAM2** 的图像目标分割与评估项目。
-本项目主要用于读取图像与检测框提示信息，调用 SAM2 模型进行目标分割，生成预测掩码结果，并计算 IoU、Dice、MAE、MSE、Precision、Recall、F1-score、FPS 等评估指标。
+This project is built upon the **SAM2 (Segment Anything Model 2)** architecture and is designed for image object segmentation and quantitative evaluation. The framework supports reading image data and bounding box prompts, performing inference using SAM2, generating predicted segmentation masks, and computing a range of evaluation metrics, including IoU, Dice coefficient, MAE, MSE, Precision, Recall, F1-score, and FPS.
 
-## 项目简介
+## Project Overview
 
-本仓库集成了 SAM2 相关模型代码，并加入了 AG-LoRA、Adapter、Attention 等扩展模块，可用于图像分割模型的推理、可视化与实验评估。
+This repository integrates the official SAM2 implementation and extends it with additional modules, including **AG-LoRA**, **Adapter-based tuning**, and **attention enhancement mechanisms**. It supports model inference, visualisation, and experimental evaluation for image segmentation tasks.
 
-当前主程序为：
+The primary entry point for inference and evaluation is:
 
 ```bash
 val_f_s.py
 ```
 
-该脚本会根据输入 JSON 中的图片名称和目标框信息，对测试图片进行分割预测，并将预测结果保存到指定输出目录。
+This script processes a dataset based on JSON-formatted image names and bounding box prompts, performs segmentation inference on each image, and stores the resulting predictions in the specified output directory.
 
-## 主要功能
+## Key Features
 
-* 支持 SAM2 / SAM2.1 模型加载与推理
-* 支持基于 bounding box 的目标分割
-* 支持自动掩码生成
-* 支持 LoRA / Adapter 等模型扩展结构
-* 支持批量处理测试图片
-* 支持预测结果可视化保存
-* 支持常用分割与检测评估指标计算：
+* Support for SAM2 / SAM2.1 model loading and inference
+* Bounding box–guided instance segmentation
+* Automatic mask generation
+* Integration of LoRA, Adapter, and related parameter-efficient fine-tuning modules
+* Batch processing of evaluation datasets
+* Visualisation and saving of prediction results
+* Comprehensive evaluation metrics:
 
-  * IoU
+  * Intersection over Union (IoU)
   * Dice Coefficient
-  * MAE
-  * MSE
+  * Mean Absolute Error (MAE)
+  * Mean Squared Error (MSE)
   * Precision
   * Recall
   * F1-score
-  * FPS
+  * Frames Per Second (FPS)
 
-## 项目结构
+## Repository Structure
 
 ```bash
 yjh/
 ├── sam2/
-│   ├── configs/                    # SAM2 / SAM2.1 配置文件
-│   ├── csrc/                       # CUDA / C++ 扩展相关代码
-│   ├── modeling/                   # SAM2 模型结构代码
-│   ├── utils/                      # 工具函数
-│   ├── build_sam.py                # 构建 SAM2 模型
-│   ├── sam2_image_predictor.py     # 图像分割预测器
-│   ├── automatic_mask_generator.py # 自动掩码生成器
-│   ├── lora_sam2.py                # LoRA 相关模块
-│   ├── lora_adapter.py             # Adapter 相关模块
-│   ├── Qlora.py                    # QLoRA 相关模块
+│   ├── configs/                    # SAM2 / SAM2.1 configuration files
+│   ├── csrc/                       # CUDA / C++ extension modules
+│   ├── modeling/                   # Core SAM2 model architecture
+│   ├── utils/                      # Utility functions
+│   ├── build_sam.py                # SAM2 model construction script
+│   ├── sam2_image_predictor.py     # Image segmentation predictor
+│   ├── automatic_mask_generator.py # Automatic mask generation module
+│   ├── lora_sam2.py                # LoRA-based adaptation module
+│   ├── lora_adapter.py             # Adapter-based tuning module
+│   ├── Qlora.py                    # QLoRA implementation
 │   └── ...
-├── val_f_s.py                      # 主推理与评估脚本
+├── val_f_s.py                      # Main inference and evaluation script
 ├── .gitignore
 └── README.md
 ```
 
-## 环境要求
+## Environment Requirements
 
-建议使用支持 CUDA 的 Linux 环境运行。
-如果没有 CUDA，也可以在 CPU 或 Apple MPS 上运行，但推理速度和结果稳定性可能会受到影响。
+The framework is recommended to be executed in a Linux environment with CUDA support. CPU and Apple MPS backends are also supported; however, inference speed and numerical stability may be reduced.
 
-推荐环境：
+Recommended configuration:
 
-```bash
-Python >= 3.10
-PyTorch >= 2.0
-TorchVision
-OpenCV
-NumPy
-Matplotlib
-Pillow
-tqdm
-Hydra
-OmegaConf
-```
+* Python ≥ 3.10
+* PyTorch ≥ 2.0
+* TorchVision
+* OpenCV
+* NumPy
+* Matplotlib
+* Pillow
+* tqdm
+* Hydra-Core
+* OmegaConf
 
-## 安装依赖
+## Installation
 
-克隆仓库：
+Clone the repository:
 
 ```bash
 git clone https://github.com/abiua/yjh.git
 cd yjh
 ```
 
-安装常用依赖：
+Install dependencies:
 
 ```bash
 pip install torch torchvision
 pip install opencv-python numpy matplotlib pillow tqdm hydra-core omegaconf
 ```
 
-如果使用 CUDA，请根据自己的 CUDA 版本安装对应的 PyTorch 版本。
+For CUDA-enabled environments, install the appropriate PyTorch version corresponding to your CUDA toolkit.
 
-## 权重文件准备
+## Model Weights
 
-请将训练好的 SAM2 / SAM2.1 权重文件放入 `checkpoints/` 目录，例如：
+Pre-trained SAM2 / SAM2.1 weights should be placed in the `checkpoints/` directory, for example:
 
 ```bash
 checkpoints/checkpoint250pic-400.pt
 ```
 
-默认脚本中的权重路径为：
+The default checkpoint path in the code is:
 
 ```python
 sam2_checkpoint = "./checkpoints/checkpoint250pic-400.pt"
 ```
 
-如果你的权重文件名称或路径不同，需要在 `val_f_s.py` 中修改对应路径。
+If a different filename or directory structure is used, the path must be updated accordingly in `val_f_s.py`.
 
-## 配置文件
+## Configuration Files
 
-默认使用的模型配置文件为：
+The default configuration is specified as:
 
 ```python
 model_cfg = "configs/sam2.1/sam2.1_hiera_t.yaml"
 ```
 
-如果需要切换模型规模或配置，可以修改为其他配置文件，例如：
+Alternative configurations may be selected depending on model scale:
 
 ```python
-model_cfg = "configs/sam2/sam2_hiera_t.yaml"
-model_cfg = "configs/sam2/sam2_hiera_s.yaml"
-model_cfg = "configs/sam2/sam2_hiera_b+.yaml"
-model_cfg = "configs/sam2/sam2_hiera_l.yaml"
+configs/sam2/sam2_hiera_t.yaml
+configs/sam2/sam2_hiera_s.yaml
+configs/sam2/sam2_hiera_b+.yaml
+configs/sam2/sam2_hiera_l.yaml
 ```
 
-或使用 `sam2/configs/` 目录下的其他训练配置文件。
+Additional configuration files may be found under the `sam2/configs/` directory.
 
-## 数据准备
+## Data Preparation
 
-运行前需要准备以下内容：
+Prior to execution, the following components must be prepared:
 
-### 1. 输入图片目录
+### 1. Input Image Directory
 
-存放待测试图片，例如：
+A directory containing test images, for example:
 
 ```bash
 testdata_orig/
 ```
 
-### 2. 提示框 JSON 文件
+### 2. Prompt Annotation File (Bounding Boxes)
 
-用于提供每张图片对应的目标框信息。脚本中默认变量为：
+A JSON file specifying bounding box prompts for each image:
 
 ```python
 florence_prompt = "/path/to/labels_px_-m-renamed.json"
 ```
 
-JSON 数据格式示例：
+Example format:
 
 ```json
 [
@@ -162,15 +158,15 @@ JSON 数据格式示例：
 ]
 ```
 
-### 3. Ground Truth 标注文件
+### 3. Ground Truth Annotations
 
-用于计算评估指标。脚本中默认变量为：
+Ground truth data used for evaluation:
 
 ```python
 ground_truth = "/path/to/val_coco_1.json"
 ```
 
-Ground Truth 推荐使用 COCO 格式，例如：
+COCO-style format example:
 
 ```json
 {
@@ -189,9 +185,9 @@ Ground Truth 推荐使用 COCO 格式，例如：
 }
 ```
 
-## 修改运行路径
+## Configuration of Execution Paths
 
-在运行前，请打开 `val_f_s.py`，根据自己的数据位置修改以下路径：
+Before running inference, update the following variables in `val_f_s.py`:
 
 ```python
 florence_prompt = "/path/to/your/prompt.json"
@@ -200,7 +196,7 @@ output_folder = "/path/to/save/results"
 ground_truth = "/path/to/your/ground_truth.json"
 ```
 
-例如：
+Example configuration:
 
 ```python
 florence_prompt = "./data/prompts.json"
@@ -209,35 +205,35 @@ output_folder = "./output/results"
 ground_truth = "./data/val_coco.json"
 ```
 
-## 运行推理与评估
+## Running Inference and Evaluation
 
-修改路径后，直接运行：
+After configuration, execute:
 
 ```bash
 python val_f_s.py
 ```
 
-程序会自动完成以下流程：
+The pipeline performs the following steps:
 
-1. 加载 SAM2 模型与权重
-2. 读取输入 JSON
-3. 逐张读取测试图片
-4. 根据目标框数量选择分割方式
-5. 生成预测 mask
-6. 提取预测框
-7. 计算评价指标
-8. 保存可视化结果
-9. 输出平均 IoU、Dice、MAE、MSE、Precision、Recall、F1-score 等指标
+1. Load SAM2 model and pre-trained weights
+2. Parse input JSON annotations
+3. Iterate over test images
+4. Select segmentation strategy based on number of bounding boxes
+5. Generate predicted segmentation masks
+6. Extract predicted bounding boxes
+7. Compute evaluation metrics
+8. Save visualised results
+9. Report aggregated performance metrics
 
-## 输出结果
+## Output Format
 
-预测结果会保存到 `output_folder` 指定目录中，文件名格式类似：
+Predicted results are saved in the directory specified by `output_folder`, with filenames such as:
 
 ```bash
 pred_example.jpg
 ```
 
-终端会输出每张图片的指标信息，例如：
+Per-image evaluation outputs include:
 
 ```bash
 IoU: 0.8234
@@ -250,100 +246,92 @@ F1-score: 0.8235
 FPS: 12.45 frames per second
 ```
 
-全部图片处理完成后，会输出整体平均指标：
+After processing the full dataset, aggregated metrics are reported:
 
-```bash
-Average IoU for all images
-Average Dice Coefficient for all images
-Average MAE for all images
-Average MSE for all images
-Average Precision for all images
-Average Recall for all images
-Average F1-score for all images
-```
+* Average IoU
+* Average Dice coefficient
+* Average MAE
+* Average MSE
+* Average Precision
+* Average Recall
+* Average F1-score
 
-## 注意事项
+## Notes and Considerations
 
-1. 运行前请确认权重文件路径正确。
-2. 运行前请确认输入图片文件名与 JSON 中的 `file_name` 完全一致。
-3. 如果使用 CUDA，建议确认 PyTorch 能够正常识别 GPU：
+1. Ensure that the model checkpoint path is correctly specified prior to execution.
+2. Verify that image filenames correspond exactly to those specified in the JSON prompt file.
+3. Confirm GPU availability if CUDA is enabled:
 
 ```python
 import torch
 print(torch.cuda.is_available())
 ```
 
-4. 如果显存不足，可以尝试：
+4. In cases of limited GPU memory, consider:
 
-   * 使用更小的模型配置
-   * 减小输入图片尺寸
-   * 减少单次处理的目标框数量
-   * 切换到 tiny / small 版本模型
+   * Using a smaller model configuration
+   * Reducing input image resolution
+   * Decreasing the number of bounding boxes per image
+   * Switching to a lightweight (tiny/small) model variant
 
-5. 当前脚本中的部分路径为本地绝对路径，需要根据自己的服务器或电脑目录进行修改。
+5. Many file paths are defined as local absolute paths and should be adapted to the user’s computing environment.
 
-## 常见问题
+## Frequently Encountered Issues
 
-### 1. 找不到权重文件
+### Missing checkpoint file
 
-请检查：
+Ensure that:
 
 ```python
 sam2_checkpoint = "./checkpoints/checkpoint250pic-400.pt"
 ```
 
-确保该路径下存在对应 `.pt` 文件。
+points to a valid file.
 
-### 2. 找不到图片
+### Image loading failure
 
-请检查：
+Verify that:
 
 ```python
 input_folder = "/path/to/your/images"
 ```
 
-并确认 JSON 中的 `file_name` 与图片真实文件名一致。
+and that filenames match those in the JSON file.
 
-### 3. CUDA 不可用
+### CUDA unavailable
 
-可以先检查 PyTorch 是否识别 GPU：
+Check PyTorch CUDA support:
 
 ```bash
 python -c "import torch; print(torch.cuda.is_available())"
 ```
 
-如果返回 `False`，需要重新安装与 CUDA 版本匹配的 PyTorch。
+If `False`, reinstall a CUDA-compatible PyTorch build.
 
-### 4. JSON 格式报错
+### JSON format errors
 
-请确认输入 JSON 是合法格式，并且包含必要字段：
+Ensure the presence of required fields:
 
-```json
-file_name
-bboxes
-```
+* `file_name`
+* `bboxes`
 
-Ground Truth 文件需要包含：
+Ground truth files must include:
 
-```json
-images
-annotations
-bbox
-image_id
-```
+* `images`
+* `annotations`
+* `bbox`
+* `image_id`
 
-## 后续改进方向
+## Future Improvements
 
-* 增加 `requirements.txt`
-* 增加命令行参数，避免手动修改脚本路径
-* 增加训练脚本说明
-* 增加示例数据格式
-* 增加模型权重下载说明
-* 增加实验结果表格
-* 增加可视化示例图片
+* Introduction of a `requirements.txt` file
+* Command-line argument interface to replace hard-coded paths
+* Training pipeline documentation
+* Example datasets and annotations
+* Model checkpoint download instructions
+* Experimental result tables
+* Enhanced visualisation examples
 
-## License
+## Licence
 
-本项目基于 SAM2 相关代码进行开发。
-如使用本仓库代码，请遵守原始 SAM2 项目的开源协议及相关模型权重使用规定。
-
+This project is developed based on the SAM2 framework. Users are required to comply with the original SAM2 licence and associated model usage regulations when deploying or distributing this codebase.
